@@ -66,7 +66,7 @@ function App() {
 
   return (
     <DataTable
-      title="Users"
+      title="Attractions"
       columns={columns}
       data={data}
       progressPending={loading}
