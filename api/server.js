@@ -38,7 +38,7 @@ app.get("/api/attractions", function (req, res, next) {
 
   // execute will internally call prepare and query
   connection.execute(sql, params, function (err, results, fields) {
-    res.json({ results: results });
+    res.json({ data: results });
     //   console.log(results);
   });
 });
