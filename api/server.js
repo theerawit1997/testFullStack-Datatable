@@ -38,8 +38,23 @@ app.get("/api/attractions", function (req, res, next) {
 
   // execute will internally call prepare and query
   connection.execute(sql, params, function (err, results, fields) {
-    res.json({ data: results });
-    //   console.log(results);
+    // console.log(results);
+
+    // query total
+    connection.query(
+      "SELECT COUNT(id) as total FROM attractions",
+      function (err, count, fields) {
+        const total = count[0]["total"];
+        const total_page = Math.ceil(total / per_page);
+        res.json({
+          page: page,
+          per_page: per_page,
+          total: total,
+          total_page: total_page,
+          data: results,
+        });
+      }
+    );
   });
 });
 
