@@ -18,22 +18,19 @@ app.use(cors());
 app.get("/api/attractions", function (req, res, next) {
   const page = parseInt(req.query.page);
   const per_page = parseInt(req.query.per_page);
-  //   console.log(page, per_page);
+  const sort_column = req.query.sort_column;
+  const sort_direction = req.query.sort_direction; //ASC or DESC
 
   const start_index = (page - 1) * per_page;
-
-  // A simple SELECT query
-  //   connection.query(
-  //     "SELECT * FROM `attractions` LIMIT 0, 10",
-  //     function (err, results, fields) {
-  //       //   console.log(results);
-  //       res.json({ results: results });
-  //     }
-  //   );
+  var sql = "SELECT * FROM attractions";
+  if (sort_column && sort_direction) {
+    sql += " ORDER BY " + sort_column + " " + sort_direction;
+  }
+  sql += " LIMIT?,?";
 
   // execute will internally call prepare and query
   connection.execute(
-    "SELECT * FROM `attractions` WHERE 1=1 LIMIT ?, ?",
+    sql,
     [start_index, per_page],
     function (err, results, fields) {
       res.json({ results: results });
