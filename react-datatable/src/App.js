@@ -6,6 +6,7 @@ const columns = [
   {
     name: "ID",
     selector: (row) => row.id,
+    sortable: true,
   },
   {
     name: "Image",
@@ -35,16 +36,20 @@ function App() {
   const [totalRows, setTotalRows] = useState(0);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [sortColumn, setSortColumn] = useState('');
+  const [sortDirection, setSortDirection] = useState('');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    const response = await axios.get(
-      `http://localhost:5000/api/attractions?page=${page}&per_page=${perPage}`
-    );
+    var url = `http://localhost:5000/api/attractions?page=${page}&per_page=${perPage}`;
+    if (sortColumn) {
+      url += `&sort_column=${sortColumn}&sort_direction=${sortDirection}`;
+    }
+    const response = await axios.get(url);
     setData(response.data.data);
     setTotalRows(response.data.total);
     setLoading(false);
-  }, [page, perPage]);
+  }, [page, perPage, sortColumn, sortDirection]);
 
   const handlePageChange = (page) => {
     setPage(page);
@@ -54,9 +59,15 @@ function App() {
     setPerPage(newPerPage);
   };
 
+  const handleSort = (column, sortDirection) => {
+    // console.log(column, sortDirection);
+    setSortColumn(column.name);
+    setSortDirection(sortDirection);
+  };
+
   useEffect(() => {
     fetchData();
-  }, [fetchData, page, perPage]);
+  }, [fetchData, page, perPage, sortColumn, sortDirection]);
 
   return (
     <DataTable
@@ -69,6 +80,7 @@ function App() {
       paginationTotalRows={totalRows}
       onChangeRowsPerPage={handlePerRowsChange}
       onChangePage={handlePageChange}
+      onSort={handleSort}
     />
   );
 }
