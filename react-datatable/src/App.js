@@ -33,9 +33,10 @@ function App() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
+  const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  const fetchData = async (page) => {
+  const fetchData = async () => {
     setLoading(true);
     const response = await axios.get(
       `http://localhost:5000/api/attractions?page=${page}&per_page=${perPage}`
@@ -46,23 +47,16 @@ function App() {
   };
 
   const handlePageChange = (page) => {
-    fetchData(page);
+    setPage(page);
   };
 
-  const handlePerRowsChange = async (newPerPage, page) => {
-    setLoading(true);
-    const response = await axios.get(
-      `http://localhost:5000/api/attractions?page=${page}&per_page=${newPerPage}`
-    );
-    setData(response.data.data);
+  const handlePerRowsChange = async (newPerPage, page) => {    
     setPerPage(newPerPage);
-    setLoading(false);
   };
 
   useEffect(() => {
-    fetchData(1); // fetch page 1 of users
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    fetchData();
+  }, [page,perPage]);
 
   return (
     <DataTable
