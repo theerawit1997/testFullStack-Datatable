@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import DataTable from "react-data-table-component";
 
@@ -36,7 +36,7 @@ function App() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     const response = await axios.get(
       `http://localhost:5000/api/attractions?page=${page}&per_page=${perPage}`
@@ -44,19 +44,19 @@ function App() {
     setData(response.data.data);
     setTotalRows(response.data.total);
     setLoading(false);
-  };
+  }, [page, perPage]);
 
   const handlePageChange = (page) => {
     setPage(page);
   };
 
-  const handlePerRowsChange = async (newPerPage, page) => {    
+  const handlePerRowsChange = async (newPerPage, page) => {
     setPerPage(newPerPage);
   };
 
   useEffect(() => {
     fetchData();
-  }, [page,perPage]);
+  }, [fetchData, page, perPage]);
 
   return (
     <DataTable
