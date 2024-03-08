@@ -3,9 +3,9 @@
 
 
 # start back
-cd api.\
+cd api\
 nodemon server.js
 
 # start font
-cd react-datatable.\
+cd react-datatable\
 npm start
