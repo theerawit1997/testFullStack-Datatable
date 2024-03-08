@@ -36,20 +36,31 @@ function App() {
   const [totalRows, setTotalRows] = useState(0);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [sortColumn, setSortColumn] = useState('');
-  const [sortDirection, setSortDirection] = useState('');
+  const [sortColumn, setSortColumn] = useState("");
+  const [sortDirection, setSortDirection] = useState("");
+  const [search, setSearch] = useState("");
+
+  const API_BASE_URL = "http://localhost:5000/api/attractions";
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
-    var url = `http://localhost:5000/api/attractions?page=${page}&per_page=${perPage}`;
-    if (sortColumn) {
-      url += `&sort_column=${sortColumn}&sort_direction=${sortDirection}`;
+    try {
+      setLoading(true);
+      var url = `${API_BASE_URL}?page=${page}&per_page=${perPage}`;
+      if (search) {
+        url += `&search=${search}`;
+      }
+      if (sortColumn) {
+        url += `&sort_column=${sortColumn}&sort_direction=${sortDirection}`;
+      }
+      const response = await axios.get(url);
+      setData(response.data.data);
+      setTotalRows(response.data.total);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
     }
-    const response = await axios.get(url);
-    setData(response.data.data);
-    setTotalRows(response.data.total);
-    setLoading(false);
-  }, [page, perPage, sortColumn, sortDirection]);
+  }, [page, perPage, search, sortColumn, sortDirection]);
 
   const handlePageChange = (page) => {
     setPage(page);
@@ -60,28 +71,41 @@ function App() {
   };
 
   const handleSort = (column, sortDirection) => {
-    // console.log(column, sortDirection);
     setSortColumn(column.name);
     setSortDirection(sortDirection);
   };
+
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value);
+    // Trigger search immediately as the user types
+    fetchData();
+  }; 
 
   useEffect(() => {
     fetchData();
   }, [fetchData, page, perPage, sortColumn, sortDirection]);
 
   return (
-    <DataTable
-      title="Attractions"
-      columns={columns}
-      data={data}
-      progressPending={loading}
-      pagination
-      paginationServer
-      paginationTotalRows={totalRows}
-      onChangeRowsPerPage={handlePerRowsChange}
-      onChangePage={handlePageChange}
-      onSort={handleSort}
-    />
+    <div>
+      <form>
+        <label>
+          Search:
+          <input type="text" name="search" onChange={handleSearchChange} />
+        </label>
+      </form>
+      <DataTable
+        title="Attractions"
+        columns={columns}
+        data={data}
+        progressPending={loading}
+        pagination
+        paginationServer
+        paginationTotalRows={totalRows}
+        onChangeRowsPerPage={handlePerRowsChange}
+        onChangePage={handlePageChange}
+        onSort={handleSort}
+      />
+    </div>
   );
 }
 
