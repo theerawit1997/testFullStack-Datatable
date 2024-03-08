@@ -1,32 +1,41 @@
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import DataTable from "react-data-table-component";
+import "./App.css"; // Import the CSS file for styling
 
 const columns = [
   {
     name: "ID",
     selector: (row) => row.id,
     sortable: true,
+    width: "100px",
   },
   {
     name: "Image",
     selector: (row) => row.coverimage,
+    cell: (row) => <img src={row.coverimage} width={100} alt={row.name} />,
+    width: "150px",
   },
   {
     name: "Name",
     selector: (row) => row.name,
+    sortable: true,
+    width: "150px",
   },
   {
     name: "Detail",
     selector: (row) => row.detail,
+    width: "750px",
   },
   {
     name: "Latitude",
     selector: (row) => row.latitude,
+    width: "150px",
   },
   {
     name: "Longitude",
     selector: (row) => row.longitude,
+    width: "150px",
   },
 ];
 
@@ -79,15 +88,15 @@ function App() {
     setSearch(event.target.value);
     // Trigger search immediately as the user types
     fetchData();
-  }; 
+  };
 
   useEffect(() => {
     fetchData();
   }, [fetchData, page, perPage, sortColumn, sortDirection]);
 
   return (
-    <div>
-      <form>
+    <div className="app-container">
+      <form className="search-form">
         <label>
           Search:
           <input type="text" name="search" onChange={handleSearchChange} />
